@@ -8,7 +8,7 @@
  * id 注册（__ModuleLoader__.load({id})）、cordis.patch.yml 的 name
  * 指向、旧名/旧锚点零残留。
  */
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -52,6 +52,7 @@ if (HAS_CLIENT) {
 // 4) cordis.patch.yml name 指向
 const patch = src('cordis.patch.yml') ?? ''
 ok('patch name 指向新包名', patch.includes("name: '" + PKG_NAME + "'") || patch.includes('name: "' + PKG_NAME + '"'))
+ok('YAML 无裸 @ 值（patch 行，@ 为 anchor 保留字须引号）', !/:\s+@/.test(patch))
 
 // 5) 旧名/旧锚点零残留（scripts/release 不属于交付面，豁免）
 const legacy = ['@kcoder/git-panel', '@kcoder/stats-panel', '@kcoder/terminal',
@@ -69,6 +70,19 @@ ok('旧名/旧锚点零残留', residue.length === 0, residue.join('; '))
 
 // 6) 输出
 let fail = 0
+
+/* SKILL.md 伴随文件引用一致性（防悬空引用,2026-09-11 visual-companion 教训）*/
+for (const skillDir of existsSync(join(ROOT, 'skills')) ? readdirSync(join(ROOT, 'skills')) : []) {
+  const skillMdPath = join(ROOT, 'skills', skillDir, 'SKILL.md')
+  if (!existsSync(skillMdPath)) continue
+  const md = readFileSync(skillMdPath, 'utf8')
+  for (const m of md.matchAll(/`?(skills\/[a-z0-9-]+\/[A-Za-z0-9._-]+\.(?:md|json))`?/g)) {
+    const present = existsSync(join(ROOT, m[1]))
+    console.log(`\x1b[${present ? 32 : 31}m${present ? 'PASS' : 'FAIL'}\x1b[0m  SKILL.md 引用存在：${m[1]}`)
+    if (!present) fail++
+  }
+}
+
 for (const [name, pass, detail] of checks) {
   console.log((pass ? '  ✓ ' : '  ✗ ') + name + (pass || !detail ? '' : ' — ' + detail))
   if (!pass) fail++
