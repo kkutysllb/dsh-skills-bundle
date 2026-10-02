@@ -4,9 +4,9 @@
  * prepack 自动执行，任何 FAIL 中断发布。
  *
  * 校验面：package.json 契约（name/version/main/dsh.bundle.patch/
- * exports["./client"]）、产物在位（entry/client/['skills/manifest.json']/）、模块
- * id 注册（__ModuleLoader__.load({id})）、cordis.patch.yml 的 name
- * 指向、旧名/旧锚点零残留。
+ * qilin.bundle.patch/exports["./client"]）、产物在位（entry/client/
+ * ['skills/manifest.json']/）、模块 id 注册（__ModuleLoader__.load({id})）、
+ * cordis.patch.yml 的 name 指向、旧名/旧锚点零残留。
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -31,6 +31,7 @@ ok('name == ' + PKG_NAME, pkg.name === PKG_NAME, String(pkg.name))
 ok('version 合法', /^\d+\.\d+\.\d+$/.test(String(pkg.version)), String(pkg.version))
 ok('main 入口声明', pkg.main === 'entry.js', String(pkg.main))
 ok('dsh.bundle.patch 声明', pkg.dsh?.bundle?.patch === './cordis.patch.yml')
+ok('qilin.bundle.patch 声明', pkg.qilin?.bundle?.patch === './cordis.patch.yml')
 
 // 2) 产物在位
 ok('entry.js 存在', src('entry.js') !== null)
