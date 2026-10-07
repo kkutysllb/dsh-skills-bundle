@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PKG_NAME = 'dsh-skills-bundle'
-const HAS_CLIENT = false
+const HAS_CLIENT = true
 const INTACT = ['skills/manifest.json']
 const KEEP_LEGACY = [] // 跨层持久化协议锚点（豁免旧名残留检查）
 
@@ -48,6 +48,31 @@ const client = HAS_CLIENT ? (src('client.js') ?? '') : ''
 if (HAS_CLIENT) {
   ok('ModuleLoader.load 注册', client.includes('window.__ModuleLoader__.load('))
   ok('模块 id == 包名', client.includes("id: '" + PKG_NAME + "'") || client.includes('id: "' + PKG_NAME + '"'))
+  ok('client 经 factory require 取 react', /factory:\s*function\s*\(\s*require\s*\)/.test(client) && client.includes('require("react")'))
+  ok('client 注册 settings.section 插槽', client.includes('"settings.section"'))
+}
+
+// 3.5) manifest.optional 与 skills/optional/ 目录对账（client 侧无法读盘，
+//      设置分区与条件注册都消费这份清单——漏生成即 UI 与注册面失真）
+try {
+  const manifest = JSON.parse(src('skills/manifest.json') ?? '{}')
+  const optionalDirs = existsSync(join(ROOT, 'skills/optional'))
+    ? readdirSync(join(ROOT, 'skills/optional'), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name)
+    : []
+  const declared = (manifest.optional ?? []).map((item) => item.dir.replace(/^optional\//, ''))
+  ok('manifest.optional 与 optional/ 目录一一对应',
+    declared.length === optionalDirs.length && optionalDirs.every((name) => declared.includes(name)),
+    `manifest=${declared.length} dirs=${optionalDirs.length}`)
+  ok('manifest.optional 条目元数据齐备',
+    (manifest.optional ?? []).every((item) => typeof item.name === 'string' && item.name !== '' && typeof item.description === 'string' && item.description !== ''),
+    '每条需含非空 name 与 description')
+  const coreNames = new Set((manifest.skills ?? []).map((item) => item.name))
+  const optionalNames = (manifest.optional ?? []).map((item) => item.name)
+  ok('core 与 optional 技能名零交集', optionalNames.every((name) => !coreNames.has(name)),
+    optionalNames.filter((name) => coreNames.has(name)).join(', '))
+  ok('entry.js 声明 optional 注册面', entry.includes('manifest.optional') && entry.includes('kcoder-skills.json'))
+} catch (error) {
+  ok('manifest.optional 对账可解析', false, String(error))
 }
 
 // 4) cordis.patch.yml name 指向
