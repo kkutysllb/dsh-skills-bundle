@@ -15,8 +15,9 @@
   旧 optional → 注册新集合），**即时生效、无需重启**。DSH/QiLin 的
   settings RPC 不服务第三方命名空间（dsh-coding-sidebar 同款结论），
   所以读写走插件自有路由。
-- 持久化：启用集存 `$QILIN_HOME/kcoder-skills.json`（0600），引擎重启
-  后按文件恢复；web 端与桌面端共享同一引擎，状态一致。
+- 持久化：启用集存 `kcoder-skills.json`（0600），目录按 `KCODER_HOME →
+  DSH_HOME → 旧 QILIN_HOME → ~/.kcoder` 解析，首次读到旧 QILIN_HOME 状态
+  时自动迁移；引擎重启后按文件恢复；web 端与桌面端共享同一引擎，状态一致。
 - 元数据流水线：`pnpm gen:manifest` 扫 `skills/optional/*/SKILL.md` 的
   frontmatter 生成 `manifest.optional`（core 批保持人工精选，本脚本从不
   改写）；client 侧无法读盘，清单由 manifest 单一事实源对账。

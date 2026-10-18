@@ -34,11 +34,22 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url))
 /** 技能内容目录。 */
 const SKILLS_DIR = join(ROOT, 'skills')
 
-/** 可选技能启用集的持久化文件（QILIN_HOME 内，产品私有命名空间）。 */
+/** 可选技能启用集的持久化文件（KCoder home 内，产品私有命名空间）。 */
 const STATE_FILE = 'kcoder-skills.json'
 
-/** QILIN_HOME 解析（packages/util/home-paths 同语义：env 覆盖优先，空白视同未设）。 */
-function qilinHome() {
+/** KCoder home: DSH_HOME first (engine desktop), then legacy QILIN_HOME, then ~/.kcoder. */
+function kcoderHome() {
+  for (const name of ['KCODER_HOME', 'DSH_HOME']) {
+    const value = process.env[name]
+    if (typeof value === 'string' && value.trim() !== '') return value
+  }
+  const legacy = process.env.QILIN_HOME
+  if (typeof legacy === 'string' && legacy.trim() !== '') return legacy
+  return join(homedir(), '.kcoder')
+}
+
+/** Pre-1.1.1 state location (QiLin era) used only to migrate existing choices. */
+function legacyHome() {
   const override = process.env.QILIN_HOME
   if (typeof override === 'string' && override.trim() !== '') return override
   return join(homedir(), '.qilin')
@@ -54,11 +65,24 @@ function stripFrontmatter(raw) {
 
 /** 读取可选技能启用集（文件缺失/损坏/非法条目一律容错为空集）。 */
 function readEnabled() {
+  const parse = (path) => {
+    const parsed = JSON.parse(readFileSync(path, 'utf8'))
+    return Array.isArray(parsed?.enabled) ? parsed.enabled.filter((name) => typeof name === 'string') : undefined
+  }
   try {
-    const parsed = JSON.parse(readFileSync(join(qilinHome(), STATE_FILE), 'utf8'))
-    if (Array.isArray(parsed?.enabled)) return parsed.enabled.filter((name) => typeof name === 'string')
+    const enabled = parse(join(kcoderHome(), STATE_FILE))
+    if (enabled !== undefined) return enabled
   } catch {
-    // 无状态文件（未做过选择）或损坏：空集起步
+    // 无状态文件（未做过选择）或损坏：尝试迁移旧 QiLin 状态
+  }
+  try {
+    const enabled = parse(join(legacyHome(), STATE_FILE))
+    if (enabled !== undefined) {
+      writeEnabled(enabled)
+      return enabled
+    }
+  } catch {
+    // 旧状态也不存在：空集起步
   }
   return []
 }
@@ -66,7 +90,7 @@ function readEnabled() {
 /** 持久化启用集（0600；失败不阻塞本次会话的注册变更）。 */
 function writeEnabled(enabled) {
   try {
-    writeFileSync(join(qilinHome(), STATE_FILE), `${JSON.stringify({ enabled }, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 })
+    writeFileSync(join(kcoderHome(), STATE_FILE), `${JSON.stringify({ enabled }, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 })
   } catch {
     // 只读 home 等异常：启用集退化为本次会话内有效
   }

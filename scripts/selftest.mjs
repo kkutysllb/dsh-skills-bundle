@@ -9,6 +9,10 @@ import { join } from 'node:path'
 
 const repo = fileURLToPath(new URL("..", import.meta.url))
 const home = mkdtempSync(join(tmpdir(), 'kcs-selftest-'))
+// kcoderHome() 按 KCODER_HOME → DSH_HOME → 旧 QILIN_HOME → ~/.kcoder 解析：
+// 三个 env 全部钉到临时目录，否则开发者机器上设置过的 DSH_HOME 会让真状态漏进断言。
+process.env.KCODER_HOME = home
+process.env.DSH_HOME = home
 process.env.QILIN_HOME = home
 
 const registered = new Map() // name -> { source }

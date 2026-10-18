@@ -14,7 +14,7 @@
  *   走插件自有路由而非 settings 远程；
  * - GET catalog 列 core + optional 两批与启用态；POST set-enabled 提交
  *   新启用集，宿主就地重注册（dispose 旧 optional → 注册新集合），即时
- *   生效、持久化在 $QILIN_HOME/kcoder-skills.json（0600）；
+ *   生效、持久化在 $DSH_HOME/kcoder-skills.json（0600）；
  * - 软探测：宿主无 settings.section 插槽或 slots 服务缺位时静默跳过
  *   （console 诊断），宿主侧技能注册不受影响。
  *
@@ -37,7 +37,7 @@
 		var zh = {
 			nav: "可选技能",
 			title: "可选技能",
-			intro: "随包分发的长尾技能批，默认不注册——打开开关即对当前引擎的所有会话生效（模型可按 description 匹配加载，或 /技能名 显式调用）。选择持久化在本机 QILIN_HOME。",
+			intro: "随包分发的长尾技能批，默认不注册——打开开关即对当前引擎的所有会话生效（模型可按 description 匹配加载，或 /技能名 显式调用）。选择持久化在本机 KCoder 数据目录。",
 			coreTitle: "核心技能",
 			coreIntro: "随插件激活即注册，不可关闭。",
 			optionalTitle: "长尾技能",
@@ -52,7 +52,7 @@
 		var en = {
 			nav: "Optional Skills",
 			title: "Optional Skills",
-			intro: "Long-tail skill packs shipped with the bundle but not registered by default — flip a switch to expose it to every session on this engine (model-matched by description, or invoked as /name). Choices persist in the local QILIN_HOME.",
+			intro: "Long-tail skill packs shipped with the bundle but not registered by default — flip a switch to expose it to every session on this engine (model-matched by description, or invoked as /name). Choices persist in the local KCoder data directory.",
 			coreTitle: "Core skills",
 			coreIntro: "Registered on plugin activation; always on.",
 			optionalTitle: "Long-tail skills",
