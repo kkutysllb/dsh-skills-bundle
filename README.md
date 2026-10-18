@@ -1,13 +1,13 @@
 # dsh-skills-bundle
 
-> **方法论技能包**——两批技能：**core**（skills/manifest.json，31 项）激活即注册为 runtime skill（rank 250，项目级 `.dsh/skills` 同名技能可覆盖；QiLin 侧对应 `.qilin/skills` 与 `.agents/skills`）；**optional**（skills/optional/，40 项）随包分发但默认不注册，用户在设置页「可选技能」分区按需启用。适配自 KSkills 仓库。
+> **方法论技能包**——两批技能：**core**（skills/manifest.json，31 项）激活即注册为 runtime skill（rank 250，项目级 `.dsh/skills` 同名技能可覆盖；QiLin 侧对应 `.qilin/skills` 与 `.agents/skills`）；**optional**（skills/optional/，36 项）随包分发但默认不注册，用户在设置页「可选技能」分区按需启用。适配自 KSkills 仓库。
 
 自 KCoder 内置包独立发布的 dsh 插件（v1.0.0 起独立版本线）。
 
 ## 可选技能（v1.1.0 起）
 
 - 设置页新增「可选技能」分区（`settings.section` 插槽）：开关卡片列出
-  40 个长尾技能，打开即对该引擎的所有会话生效（模型按 description 匹配
+  36 个长尾技能，打开即对该引擎的所有会话生效（模型按 description 匹配
   加载，或 `/技能名` 显式调用），关闭即注销。
 - 状态面：宿主插件经 `webServer.register({ kind: 'prefix' })` 挂 fenced
   JSON API（`/kcoder-skills/api`，Host 回环信任边界）——`GET catalog`
