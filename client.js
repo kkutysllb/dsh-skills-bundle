@@ -65,10 +65,12 @@
 			saveFailed: "Failed to save: the switch was reverted, please retry shortly.",
 		};
 
-		function t(key) {
+		/* 兜底译函：只看浏览器环境语言（老引擎没有 locale 面时的行为）。
+		 * apply() 接入 ctx.locale 后会把它覆写为「调用时读应用语言」的绑定译函。 */
+		var t = function (key) {
 			var lang = typeof navigator !== "undefined" && navigator.language && navigator.language.toLowerCase().indexOf("zh") === 0 ? zh : en;
 			return lang[key] || key;
-		}
+		};
 
 		/* ── 样式（作用域前缀 kcs-，随插件 fiber 卸载移除）──────── */
 
@@ -243,9 +245,18 @@
 
 		/* ── cordis client 插件体 ───────────────────────────────── */
 
-		var inject = ["slots"];
+		var inject = ["slots", "locale"];
 
 		function apply(ctx) {
+			/* 双语接入宿主 locale 服务（QiLin ctx.provide('locale')，DSH 同名面）：
+			 * 注册本插件命名空间字典，并把 t 覆写为「调用时读当前应用语言」的绑定
+			 * 译函——账户菜单切语言即时生效；无 locale 面的老引擎保持上方兜底。 */
+			if (ctx && ctx.locale && typeof ctx.locale.register === "function" && typeof ctx.locale.bind === "function") {
+				ctx.effect(function () {
+					return ctx.locale.register(NS, { zh: zh, en: en });
+				}, "dsh-skills-bundle: locale dictionaries");
+				t = ctx.locale.bind(NS);
+			}
 			var removeStyles = ensureStyles();
 			if (removeStyles !== null && typeof ctx.effect === "function") {
 				ctx.effect(function () { return removeStyles; }, "dsh-skills-bundle: section styles");
@@ -260,7 +271,7 @@
 						name: "settings.section",
 						id: SECTION_ID,
 						order: 60,
-						label: t("nav"),
+						label: function () { return t("nav"); },
 					}, makeOptionalSkillsSection());
 				});
 			} catch (error) {
