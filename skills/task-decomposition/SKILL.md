@@ -1,6 +1,6 @@
 ---
 name: task-decomposition
-description: Use this skill when breaking broad coding requests into Qiongqi tasks, task ids, staged work, implementation phases, or independent subtasks.
+description: Use this skill when breaking broad coding requests into tasks, task ids, staged work, implementation phases, or independent subtasks.
 ---
 
 # Task Decomposition Skill
@@ -15,7 +15,7 @@ and verified independently.
 1. Identify the user-visible objective and acceptance criteria.
 2. Split by ownership boundary: backend, engine, API, frontend, tests, docs.
 3. Assign each task a clear output and verification step.
-4. Record task context so Qiongqi changes and events can be grouped later.
+4. Record task context so task-tracker changes and events can be grouped later.
 5. Keep UI polish and core engine changes as separate tasks when possible.
 
 ## Review Checklist

@@ -53,15 +53,15 @@ evidence-gathering rather than guess-and-check. The goal is to identify the
    passes after. This is non-negotiable — without a regression test the
    bug will return.
 
-3. **Run the full test suite.** Use `run_tests` to verify the fix does not
-   break anything else.
+3. **Run the full test suite.** Run the project's test command to verify the
+   fix does not break anything else.
 
 ### Phase 4: Verify
 
 1. **Check for similar issues.** Search the codebase for the same pattern
    that caused the bug — `grep` for similar code structures.
 
-2. **Review the diff.** Use `git_diff` to review the complete change set.
+2. **Review the diff.** Use `git diff` to review the complete change set.
    Make sure no debug logging or temporary code leaked into the fix.
 
 ## Common Bug Categories
@@ -79,7 +79,7 @@ evidence-gathering rather than guess-and-check. The goal is to identify the
 ### Concurrency Issues
 - Look for shared mutable state accessed from multiple threads
 - Check for missing locks, deadlocks, or race conditions
-- Use `git_log` to find when concurrency was introduced
+- Use `git log -S` to find when the concurrency was introduced
 
 ### Type Errors
 - Check for implicit type coercion

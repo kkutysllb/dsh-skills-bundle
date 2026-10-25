@@ -5,7 +5,7 @@ description: File-based planning for complex or multi-step work. Maintains a liv
 
 # Planning with Files
 
-Work like Manus: use a persistent markdown file as your "working memory on disk".
+Work from a persistent markdown file — your "working memory on disk".
 
 ```
 Context window = RAM (volatile, limited)
@@ -16,7 +16,7 @@ Filesystem     = disk (persistent, unlimited)
 
 After 50+ tool calls the original goals get forgotten. The plan file keeps
 them fresh. The user can also open and read these plans at any time from the
-KCoder plan panel, so keep them accurate and tidy.
+engine's plan panel, so keep them accurate and tidy.
 
 ## Where the Plan Goes
 

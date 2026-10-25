@@ -1,13 +1,13 @@
 # dsh-skills-bundle
 
-> **方法论技能包**——两批技能：**core**（skills/manifest.json，31 项）激活即注册为 runtime skill（rank 250，项目级 `.dsh/skills` 同名技能可覆盖；QiLin 侧对应 `.qilin/skills` 与 `.agents/skills`）；**optional**（skills/optional/，36 项）随包分发但默认不注册，用户在设置页「可选技能」分区按需启用。适配自 KSkills 仓库。
+> **方法论技能包**——两批技能：**core**（skills/manifest.json，31 项）激活即注册为 runtime skill（rank 250，项目级 `.dsh/skills` 同名技能可覆盖；QiLin 侧对应 `.qilin/skills` 与 `.agents/skills`）；**optional**（skills/optional/，37 项）随包分发但默认不注册，用户在设置页「可选技能」分区按需启用。适配自 KSkills 仓库。
 
 自 KCoder 内置包独立发布的 dsh 插件（v1.0.0 起独立版本线）。
 
 ## 可选技能（v1.1.0 起）
 
 - 设置页新增「可选技能」分区（`settings.section` 插槽）：开关卡片列出
-  36 个长尾技能，打开即对该引擎的所有会话生效（模型按 description 匹配
+  37 个长尾技能，打开即对该引擎的所有会话生效（模型按 description 匹配
   加载，或 `/技能名` 显式调用），关闭即注销。
 - 状态面：宿主插件经 `webServer.register({ kind: 'prefix' })` 挂 fenced
   JSON API（`/kcoder-skills/api`，Host 回环信任边界）——`GET catalog`
@@ -83,9 +83,23 @@ KCoder 桌面版仍随版本内置分发。
 
 - 本仓为开发真源；改动后跑 `node scripts/sync-to-dsh-plugins.mjs` 同步 dsh-plugins 镜像并提交推送。
 - 技能批变动后跑 `pnpm gen:manifest` 刷新 optional 清单（client 无法读盘，靠 manifest 对账）。
-- `pnpm smoke`（prepack 自动）做契约形态校验（含 optional 与目录对账）；
-  `pnpm selftest` 跑宿主侧行为自测（mock ctx 全流程：注册数 / fence /
-  启停 / 持久化 / dispose）；`node scripts/create-github-releases.mjs` 同步 release/ 到 GitHub Releases。
+- `pnpm smoke`（prepack 自动）做契约形态校验（含 optional 与目录对账、
+  SKILL.md 相对引用存在性）；`pnpm selftest` 跑宿主侧行为自测（mock ctx
+  全流程：注册数 / fence / 启停 / 持久化 / dispose）；`node scripts/create-github-releases.mjs` 同步 release/ 到 GitHub Releases。
+
+## 技能内容维护（v1.3.0 起）
+
+- **流程方法论批**（brainstorming / writing-plans / executing-plans /
+  subagent-driven-development / test-driven-development / requesting-code-review /
+  finishing-a-development-branch）按上游 obra/superpowers（MIT）v6.2–v7.0.1
+  的演进重写过；再升级时抓上游 RELEASE-NOTES 做增量对齐，保持引擎中立化
+  （不引入 TodoWrite/Task tool/superpowers 路径等宿主专有词）。
+- **microsoft-foundry** 为 [microsoft/azure-skills](https://github.com/microsoft/azure-skills)
+  官方技能（MIT）的整目录快照（SKILL.md frontmatter 带 version，当前
+  1.2.31）；升级 = 用官方同名目录整目录替换 + 重跑 `pnpm gen:manifest`，
+  不做本地改动以便追踪上游。
+- **smoke 的相对引用检查**：递归校验全部 SKILL.md 的 `./`、`../`、`@`、
+  目录前缀与 `<技能名>/` 六类引用；文档语法样例走 `REF_EXEMPT` 豁免清单。
 
 ## 许可
 

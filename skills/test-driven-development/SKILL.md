@@ -182,6 +182,16 @@ Confirm:
 
 **Other tests fail?** Fix now.
 
+**"Other tests" means the project's suite, not just your file.** A
+green run of the test you wrote is not a green suite. Before you call
+the change done, run the project's test command (bare `pytest`,
+`npm test`, `cargo test` — whatever the repo uses) even when your task
+named only one test file. A scope statement in your task bounds the
+deliverable, not your verification. Any failure that run shows —
+including one you didn't cause — goes in your report by name; a red
+test you watched scroll past and didn't mention is a report falsified
+by omission.
+
 ### REFACTOR - Clean Up
 
 After green only:
@@ -354,12 +364,20 @@ Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix 
 
 Never fix bugs without a test.
 
-## Testing Anti-Patterns
+## Writing Good Tests
 
-When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
-- Testing mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependencies
+When writing or changing any test, read @writing-good-tests.md for the
+rules that keep tests honest — each stated GOOD-first, with the trap it
+prevents named:
+
+- Name the production change that would make the test fail — before writing it
+- Derive expected values independently — never with the code under test
+- Test behavior, not text (the string-presence trap)
+- No change detectors (tests that fire on redesign, sleep through bugs)
+- The mock earns no assertions — assert the real outcome
+- Mock at the right level, mirror reality, and keep test-only code out of
+  production classes
+- Close with the mutation check; trivial code and human prose earn no tests
 
 ## Final Rule
 

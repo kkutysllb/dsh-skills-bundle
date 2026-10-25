@@ -70,12 +70,12 @@ Before writing any code:
    - Integration tests for database/API interactions
    - E2E tests for critical user flows (sparingly)
 
-3. **Run tests.** Use `run_tests` to execute. If the project has a
-   linter, run `run_linter` too.
+3. **Run tests.** Run the project's test command. If the project has a
+   linter, run it too.
 
 ### Phase 4: Review and Commit
 
-1. **Self-review the diff.** Use `git_diff` to review every line. Ask:
+1. **Self-review the diff.** Use `git diff` to review every line. Ask:
    - Does this code do what the requirement asked for?
    - Is there anything that would surprise a reviewer?
    - Did I leave any debug code or TODOs?
@@ -93,8 +93,8 @@ Before writing any code:
 
 Before considering the implementation done:
 
-- [ ] All tests pass (`run_tests`)
-- [ ] No linter errors (`run_linter`)
+- [ ] All tests pass (project test command)
+- [ ] No linter errors (project linter command)
 - [ ] No debug code left in the diff
 - [ ] Error cases are handled, not swallowed
 - [ ] Input is validated at trust boundaries

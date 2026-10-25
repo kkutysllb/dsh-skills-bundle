@@ -14,6 +14,7 @@ azd ai agent init -m <manifestUrl>   # scaffold from a sample
 azd ai agent init --src <dir>        # scaffold from existing source
 
 azd ai agent run --no-client         # start on localhost:8088 without a client UI
+azd ai agent run                     # start and open the protocol-appropriate client
 azd ai agent invoke "<msg>"          # invoke the deployed agent
 azd ai agent invoke --local "<msg>"  # invoke the agent on localhost
 
@@ -36,6 +37,8 @@ azd ai agent optimize / optimize status / optimize apply / optimize deploy / opt
 
 Use `--output json` only when a command supports it. `azd ai agent invoke` supports `default` and `raw` output.
 
+Without `--no-client`, `azd ai agent run` opens Agent Inspector for the Responses and Invocations protocols, or Microsoft 365 Agents Playground for the Activity protocol. `azd ai agent invoke` does not support the Activity protocol; use the Playground locally and the configured Microsoft 365 channel after deployment.
+
 ### Hosted files and sessions
 
 Use the file commands for an active hosted-agent session:
@@ -57,7 +60,7 @@ Use `sessions create` only when a session must exist before invoke or file opera
 
 ## The azure.yaml service block
 
-After `azd ai agent init`, every hosted agent is defined as a **service block in `azure.yaml`** (`host: azure.ai.agent`) plus the active azd env; init consolidates the sample's definition into `azure.yaml`.
+After `azd ai agent init`, each agent developed through azd is defined as a **service block in `azure.yaml`** (`host: azure.ai.agent`) plus the active azd env. Hosted Agents add code/container fields; a Managed Harness Agent uses `kind: prompt` and `harness.type: github_copilot_preview`.
 
 | Location | What it holds |
 |------|---------------|
@@ -111,13 +114,42 @@ services:
         version: 1.0.0
 ```
 
-- `protocols` -- `responses`, `invocations`, `invocations_ws`. Editing requires `azd deploy`.
+- `protocols` -- `responses`, `invocations`, `invocations_ws`, or `activity`. Editing requires `azd deploy`.
 - `container.resources` -- valid tiers: `0.25/0.5Gi`, `1/2Gi`, `2/4Gi`.
 - `environmentVariables` -- `${VAR}` resolves from the active azd env. Not for secrets.
-- `codeConfiguration` present -> direct code deploy (ZIP, Foundry builds).
+- `codeConfiguration` present -> code deploy (ZIP, Foundry builds).
 - `agentEndpoint` / `agentCard` -- patch in place with `azd ai agent endpoint update` (no new version).
 - `deployments[]` (under the `ai-project` service) -- model deployments provisioned via Bicep. `name` is the literal Azure deployment resource name the agent references through `AZURE_AI_MODEL_DEPLOYMENT_NAME`.
-- Connections/toolboxes -- created with `azd ai connection` / `azd ai toolbox` and consumed via a `TOOLBOX_<NAME>_MCP_ENDPOINT` env var (see [tools](../../create/references/tools.md)).
+- Hosted connections/toolboxes -- created with `azd ai connection` / `azd ai toolbox` and consumed via a `TOOLBOX_ENDPOINT` env var (see [toolbox.md](../../toolbox/toolbox.md)).
+
+### Managed Harness Agent service block
+
+```yaml
+services:
+  assistant:
+    host: azure.ai.agent
+    kind: prompt
+    name: assistant
+    model: gpt-5-mini
+    instructions: Help the user.
+    harness:
+      type: github_copilot_preview
+    tools:
+      - type: web_search
+```
+
+A Managed Harness Agent has no source/runtime/container fields and no local `azd ai agent run` path. Direct Prompt Agent tools are authored in `tools[]`. In this workflow, existing Toolboxes are attached through their versioned MCP endpoint and existing Skills are referenced by name and version; connection, Toolbox, and Skill resources are managed separately with their `azd ai` commands.
+
+### Voice Agent service blocks (`kind: voice`)
+
+Use `azd ai agent init --kind prompt-voice` for a new Prompt Voice service. For Hosted Voice, initialize from an `azure.yaml` template that defines both the hosted target and Voice wrapper, or add a Voice wrapper to an existing compatible hosted target.
+
+```bash
+azd ai agent init --no-prompt --kind prompt-voice --agent-name <agent-name> \
+  --model gpt-realtime
+```
+
+Resolve the new-versus-existing project choice before init and pass `--project-id` for an existing project. Normalize the generated YAML as directed by [create-voice](../../create/create-voice.md), then load only its selected subtype reference.
 
 ## State (azd env vars)
 

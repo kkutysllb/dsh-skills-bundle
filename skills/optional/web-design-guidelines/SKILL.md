@@ -22,7 +22,7 @@ Fetch fresh guidelines before each review:
 https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md
 ```
 
-Use WebFetch to retrieve the latest rules. The fetched content contains all the rules and output format instructions.
+Use the engine's web-fetch tool to retrieve the latest rules. The fetched content contains all the rules and output format instructions. If the source is unreachable, say so and review against the guidelines' core themes — interaction feedback, accessibility (keyboard, focus, ARIA, contrast), performance, and visual consistency — marking the review as based on themes rather than the full rule set.
 
 ## Usage
 

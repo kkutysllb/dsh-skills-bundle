@@ -34,7 +34,7 @@ def main():
         )
 
         page.goto(url, timeout=timeout)
-        page.wait_for_load_state("networkidle")
+        page.wait_for_load_state("load")
         page.wait_for_timeout(1000)  # let late async work emit
 
         browser.close()

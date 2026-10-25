@@ -13,7 +13,7 @@ Recover safely from failed or unwanted changes while protecting user edits.
 
 1. Inspect current git status and identify which files the agent touched.
 2. Prefer targeted reversal of agent changes over broad reset commands.
-3. Use saved review/fix metadata, diffs, or Qiongqi task changes to reconstruct
+3. Use saved review/fix metadata, diffs, or task-tracker task changes to reconstruct
    the before state.
 4. Ask before destructive operations that could remove user work.
 5. Verify the project diff after recovery.

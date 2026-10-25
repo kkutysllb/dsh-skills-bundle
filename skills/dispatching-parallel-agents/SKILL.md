@@ -65,10 +65,10 @@ Each agent gets:
 
 ### 3. Dispatch in Parallel
 
-```typescript
-Task("Fix agent-tool-abort.test.ts failures")
-Task("Fix batch-completion-behavior.test.ts failures")
-Task("Fix tool-approval-race-conditions.test.ts failures")
+```
+dispatch_subagent("Fix agent-tool-abort.test.ts failures")
+dispatch_subagent("Fix batch-completion-behavior.test.ts failures")
+dispatch_subagent("Fix tool-approval-race-conditions.test.ts failures")
 // All three run concurrently
 ```
 
@@ -173,7 +173,7 @@ After agents return:
 
 ## Real-World Impact
 
-From debugging session (2025-10-03):
+Measured on a representative debugging session:
 - 6 failures across 3 files
 - 3 agents dispatched in parallel
 - All investigations completed concurrently

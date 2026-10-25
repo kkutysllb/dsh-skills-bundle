@@ -24,7 +24,12 @@ def main():
         browser = p.chromium.launch(headless=True)  # Always headless
         page = browser.new_page()
         page.goto(url, timeout=timeout)
-        page.wait_for_load_state("networkidle")  # CRITICAL: wait for JS before inspecting
+        page.wait_for_load_state("load")
+        # Wait until interactive elements actually exist (condition, not a clock)
+        try:
+            page.wait_for_selector("button, a, input", timeout=timeout)
+        except Exception:
+            pass  # page legitimately has no interactive elements
 
         print(f"# {url}\n")
         for role in ("button", "link", "textbox", "checkbox"):

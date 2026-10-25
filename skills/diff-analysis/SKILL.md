@@ -15,12 +15,12 @@ Understand what changed before deciding whether the change is correct.
 2. Read unified hunks with surrounding context, not only added lines.
 3. Separate user-authored project changes from agent scratch or generated
    artifacts.
-4. Link findings to file paths, hunks, task ids, or Qiongqi events.
+4. Link findings to file paths, hunks, task ids, or task-tracker events.
 5. Summarize impact in terms of behavior, API, data, tests, and UI.
 
 ## Review Checklist
 
-- The analysis distinguishes project diff from Qiongqi task changes.
+- The analysis distinguishes project diff from task-tracker task changes.
 - Large or high-risk files are called out explicitly.
 - Deleted code is reviewed as carefully as added code.
 - Findings cite concrete changed files instead of generic concerns.

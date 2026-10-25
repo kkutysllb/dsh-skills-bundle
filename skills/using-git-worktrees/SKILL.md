@@ -50,7 +50,7 @@ Honor any existing declared preference without asking. If the user declines cons
 
 ### 1a. Native Worktree Tools (preferred)
 
-The user has asked for an isolated workspace (Step 0 consent). Do you already have a way to create a worktree? It might be a tool with a name like `EnterWorktree`, `WorktreeCreate`, a `/worktree` command, or a `--worktree` flag. If you do, use it and skip to Step 3.
+The user has asked for an isolated workspace (Step 0 consent). Do you already have a way to create a worktree? It might be a dedicated worktree tool, a `/worktree` command, or a `--worktree` flag. If you do, use it and skip to Step 3.
 
 Native tools handle directory placement, branch creation, and cleanup automatically. Using `git worktree add` when you have a native tool creates phantom state your harness can't see or manage.
 
@@ -76,9 +76,9 @@ Follow this priority order. Explicit user preference always beats observed files
 3. **Check for an existing global directory:**
    ```bash
    project=$(basename "$(git rev-parse --show-toplevel)")
-   ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null
+   ls -d ~/.worktrees/$project 2>/dev/null
    ```
-   If found, use it (backward compatibility with legacy global path).
+   If found, use it (backward compatibility with a legacy global path).
 
 4. **If there is no other guidance available**, default to `.worktrees/` at the project root.
 
@@ -94,7 +94,7 @@ git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/d
 
 **Why critical:** Prevents accidentally committing worktree contents to repository.
 
-Global directories (`~/.config/superpowers/worktrees/`) need no verification.
+Global directories outside the repository need no verification.
 
 #### Create the Worktree
 
@@ -103,7 +103,7 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 
 # Determine path based on chosen location
 # For project-local: path="$LOCATION/$BRANCH_NAME"
-# For global: path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+# For global: path=~/.worktrees/$project/$BRANCH_NAME
 
 git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
@@ -200,7 +200,7 @@ Ready to implement <feature-name>
 
 **Never:**
 - Create a worktree when Step 0 detects existing isolation
-- Use `git worktree add` when you have a native worktree tool (e.g., `EnterWorktree`). This is the #1 mistake — if you have it, use it.
+- Use `git worktree add` when you have a native worktree tool. This is the #1 mistake — if you have it, use it.
 - Skip Step 1a by jumping straight to Step 1b's git commands
 - Create worktree without verifying it's ignored (project-local)
 - Skip baseline test verification

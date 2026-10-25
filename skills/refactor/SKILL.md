@@ -16,11 +16,11 @@ the refactor begins.
 
 Before changing any code:
 
-1. **Ensure tests exist and pass.** Run `run_tests` first. If test coverage
-   is thin, write characterization tests that capture current behavior
-   before refactoring.
+1. **Ensure tests exist and pass.** Run the project's test command first. If
+   test coverage is thin, write characterization tests that capture current
+   behavior before refactoring.
 
-2. **Establish a baseline.** Use `git_status` to confirm a clean working
+2. **Establish a baseline.** Use `git status` to confirm a clean working
    tree. Commit or stash unrelated changes so the refactor diff is isolated.
 
 3. **Define the goal.** Write down what "better" means for this code:
@@ -72,7 +72,7 @@ steps make failures easy to localize.
 ### Step 3: Verify After Each Step
 
 1. Run the relevant tests
-2. Check `git_diff` to review what changed
+2. Check `git diff` to review what changed
 3. If tests fail, revert and retry with a smaller step
 
 ### Step 4: Commit in Logical Units

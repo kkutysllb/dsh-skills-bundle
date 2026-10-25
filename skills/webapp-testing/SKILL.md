@@ -25,7 +25,7 @@ User task → Is it static HTML?
         │        Then use the helper + write simplified Playwright script
         │
         └─ Yes → Reconnaissance-then-action:
-            1. Navigate and wait for networkidle
+            1. Navigate and wait for the element you care about
             2. Take screenshot or inspect DOM
             3. Identify selectors from rendered state
             4. Execute actions with discovered selectors
@@ -56,10 +56,15 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=True) # Always launch chromium in headless mode
     page = browser.new_page()
     page.goto('http://localhost:5173') # Server already running and ready
-    page.wait_for_load_state('networkidle') # CRITICAL: Wait for JS to execute
+    page.wait_for_selector('main') # CRITICAL: Wait for the element you interact with
     # ... your automation logic
     browser.close()
 ```
+
+Wait for **conditions, not clocks**: prefer `page.wait_for_selector(...)` /
+`locator.wait_for()` (and expect-style assertions) over fixed timeouts.
+Avoid `wait_for_load_state('networkidle')` — it is unreliable for apps with
+persistent connections (websockets, polling) and is discouraged by Playwright.
 
 ## Reconnaissance-Then-Action Pattern
 
@@ -76,8 +81,8 @@ with sync_playwright() as p:
 
 ## Common Pitfall
 
-❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps
-✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection
+❌ **Don't** inspect the DOM before the content you target exists on dynamic apps
+✅ **Do** wait for the element you're about to use (`page.wait_for_selector(...)`) before inspection; never rely on fixed sleeps or `networkidle`
 
 ## Best Practices
 
@@ -85,7 +90,7 @@ with sync_playwright() as p:
 - Use `sync_playwright()` for synchronous scripts
 - Always close the browser when done
 - Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs
-- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`
+- Add appropriate waits: wait for conditions with `page.wait_for_selector()` / `locator.wait_for()`, not fixed `wait_for_timeout()` sleeps
 
 ## Reference Files
 

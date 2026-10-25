@@ -15,12 +15,12 @@ Keep the Coding Agent focused on the current project, task, and evidence.
 2. Load only context needed for the current step.
 3. Keep facts from code, logs, tests, and user messages separate from
    assumptions.
-4. Persist durable Coding context through Qiongqi session files.
+4. Persist durable Coding context through the engine's session files.
 5. Drop or quarantine unrelated task memory.
 
 ## Review Checklist
 
-- Current task context is not mixed with other OClaw workflows.
+- Current task context is not mixed with other concurrent workflows.
 - Active skills are recorded for the session.
 - Long-running work summarizes verified state before continuing.
 - Context compaction preserves task boundaries and pending verification.

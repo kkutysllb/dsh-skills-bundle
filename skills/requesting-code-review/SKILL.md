@@ -25,13 +25,17 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 
 **1. Get git SHAs:**
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
+BASE_SHA=$(git rev-parse HEAD~1)  # or, for a multi-commit branch: git merge-base origin/main HEAD
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-**2. Dispatch code reviewer subagent:**
+For multi-commit work, always use `git merge-base origin/main HEAD` — a bare
+`origin/main` silently shifts if main moved forward since you branched, and
+the review then reports phantom deletions of commits that were never yours.
 
-Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
+**2. Dispatch a code reviewer subagent:**
+
+Dispatch a fresh reviewer subagent, filling the template at `code-reviewer.md`
 
 **Placeholders:**
 - `{DESCRIPTION}` - Brief summary of what you built
