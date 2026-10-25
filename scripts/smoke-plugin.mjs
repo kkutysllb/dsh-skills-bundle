@@ -9,7 +9,7 @@
  * cordis.patch.yml 的 name 指向、旧名/旧锚点零残留。
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -106,6 +106,66 @@ for (const skillDir of existsSync(join(ROOT, 'skills')) ? readdirSync(join(ROOT,
     const present = existsSync(join(ROOT, m[1]))
     console.log(`\x1b[${present ? 32 : 31}m${present ? 'PASS' : 'FAIL'}\x1b[0m  SKILL.md 引用存在：${m[1]}`)
     if (!present) fail++
+  }
+}
+
+/* SKILL.md 相对引用存在性（2026-10-25 断链教训：./xxx.md、@xxx.md 与
+ * scripts|examples|references|assets|templates/ 前缀引用不带 skills/ 前缀，
+ * 上面的全路径检查看不见——internal-comms examples/、SDD 三个派单模板、
+ * TDD testing-anti-patterns.md、webapp-testing scripts/ 曾全部静默悬空）。
+ * 递归覆盖 optional 与嵌套子技能；`<技能名>/<file>` 形态按已知技能目录解析。 */
+const FILE_REF = '(?:[A-Za-z0-9._/-]+\\.(?:md|json|py|txt|sh|html))'
+const RELATIVE_DIRS = new Set(['scripts', 'examples', 'references', 'assets', 'templates'])
+// 文档示例豁免：这些"引用"是讲解语法的样例，不是文件指针
+const REF_EXEMPT = new Set([
+  'skills/optional/slidev/SKILL.md::other.md', // `src: ./other.md` 是 slidev 导入语法示例
+])
+{
+  const skillsRoot = join(ROOT, 'skills')
+  const skillMdFiles = []
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = join(dir, entry.name)
+      if (entry.isDirectory()) walk(full)
+      else if (entry.name === 'SKILL.md') skillMdFiles.push(full)
+    }
+  }
+  if (existsSync(skillsRoot)) walk(skillsRoot)
+
+  // 已知技能目录名 → 解析根（skills/ 或 skills/optional/）
+  const knownSkillRoots = new Map()
+  for (const base of [skillsRoot, join(skillsRoot, 'optional')]) {
+    if (!existsSync(base)) continue
+    for (const entry of readdirSync(base, { withFileTypes: true })) {
+      if (entry.isDirectory() && !knownSkillRoots.has(entry.name)) knownSkillRoots.set(entry.name, dirname(base))
+    }
+  }
+
+  for (const skillMd of skillMdFiles) {
+    const baseDir = dirname(skillMd)
+    const displayBase = relative(ROOT, baseDir)
+    const md = readFileSync(skillMd, 'utf8')
+    const refs = []
+    // `./x.md`（(?<!\.) 避免咬到 ../ 的尾巴）；`../../x.md` 整段捕获按父目录解析；
+    // `@x.md`；反引号包裹的 scripts|examples|references|assets|templates 前缀或
+    // `<技能名>/` 前缀路径。命中键在 EXEMPT 里的视为文档示例而非文件引用。
+    for (const m of md.matchAll(new RegExp('(?<!\\.)\\./(' + FILE_REF + ')', 'g'))) refs.push([m[1], baseDir])
+    for (const m of md.matchAll(new RegExp('((?:\\.\\./)+' + FILE_REF + ')', 'g'))) refs.push([m[1], baseDir])
+    for (const m of md.matchAll(new RegExp('@(' + FILE_REF + ')', 'g'))) refs.push([m[1], baseDir])
+    for (const m of md.matchAll(new RegExp('`(' + FILE_REF + ')`', 'g'))) {
+      const firstSegment = m[1].split('/')[0]
+      if (RELATIVE_DIRS.has(firstSegment)) refs.push([m[1], baseDir])
+      else if (knownSkillRoots.has(firstSegment)) refs.push([m[1], knownSkillRoots.get(firstSegment)])
+    }
+    const seen = new Set()
+    for (const [rel, resolveBase] of refs) {
+      const key = relative(ROOT, skillMd) + '::' + rel
+      if (seen.has(key) || REF_EXEMPT.has(key)) continue
+      seen.add(key)
+      const present = existsSync(join(resolveBase, rel))
+      console.log(`\x1b[${present ? 32 : 31}m${present ? 'PASS' : 'FAIL'}\x1b[0m  相对引用存在：${rel}（${displayBase}）`)
+      if (!present) fail++
+    }
   }
 }
 

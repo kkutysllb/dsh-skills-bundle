@@ -22,9 +22,9 @@ handoff.
 4. Implementation: activate `vertical-slice-development`, `implement`,
    `test-driven-development`, `test-writer`, and domain-specific skills.
 5. Validation: activate `qa-test-plan`, `webapp-testing`,
-   `playwright-verification`, `performance`, and `web-accessibility`.
-6. Review: activate `diff-analysis`, `code-review`, `pr-review-advanced`,
-   `security-review`, and `rollback-recovery`.
+   `performance`, and `web-accessibility`.
+6. Review: activate `diff-analysis`, `requesting-code-review`, `pr-review-advanced`,
+   and `rollback-recovery`.
 7. Delivery: activate `docs`, `release-engineering`, `deployment`,
    `operations-runbook`, and `handoff-docs`.
 

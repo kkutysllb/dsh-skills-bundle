@@ -264,8 +264,6 @@ Done!
 
 ## Integration
 
-**Required workflow skills:**
+**Required workflow skills:** writing-plans (produce the plan), test-driven-development (implementers follow it), requesting-code-review (final whole-implementation review).
 
-**Subagents should use:**
-
-**Alternative workflow:**
+**Subagents should use:** the prompt templates above; reviewers verify against the diff and test output, never against the implementer's summary.
