@@ -60,6 +60,21 @@ function writeState(enabled) {
   }
 }
 
+function send(res, status, payload) {
+  res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' })
+  res.end(JSON.stringify(payload))
+}
+
+/** Route handler: fence first, then actions. Full version in data-plane-and-state.md. */
+async function apiHandler(req, res) {
+  const raw = req.headers?.host
+  const host = (Array.isArray(raw) ? raw[0] : raw ?? '').toLowerCase().replace(/:\d+$/, '')
+  if (!['127.0.0.1', 'localhost', '::1', '[::1]'].includes(host)) {
+    return send(res, 403, { ok: false, error: { code: 'forbidden', message: 'forbidden' } })
+  }
+  return send(res, 404, { ok: false, error: { code: 'not-found', message: 'unknown action' } })
+}
+
 export function apply(ctx) {
   const manifest = JSON.parse(readFileSync(join(SKILLS_DIR, 'manifest.json'), 'utf8'))
   const disposers = []
@@ -77,7 +92,7 @@ export function apply(ctx) {
   }
 
   // Optional service: guard the call so a host without it still activates.
-  const disposeRoute = ctx.webServer?.register?.({ kind: 'prefix', path: '/my-plugin/api', handler })
+  const disposeRoute = ctx.webServer?.register?.({ kind: 'prefix', path: '/my-plugin/api', handler: apiHandler })
   if (typeof disposeRoute === 'function') disposers.push(disposeRoute)
 
   console.log(`my-plugin: ${disposers.length} registrations`)
@@ -113,7 +128,7 @@ window.__ModuleLoader__.load({
     var NS = "myPlugin";
     var SECTION_ID = "my-plugin-section";
 
-    var zh = { nav: "我的插件", title: "我的插件", failed: "加载失败" };
+    var zh = { /* same three keys, translated: nav, title, failed */ };
     var en = { nav: "My plugin", title: "My plugin", failed: "Failed to load" };
 
     /* Fallback translation: browser language only — the behaviour on hosts

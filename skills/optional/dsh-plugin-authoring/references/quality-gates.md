@@ -104,6 +104,7 @@ const ctx = {
 
 const { apply } = await import(repo + '/entry.js')
 const dispose = apply(ctx)
+ok('apply returns a disposer', typeof dispose === 'function')
 
 let fails = 0
 const ok = (name, pass, detail = '') => {

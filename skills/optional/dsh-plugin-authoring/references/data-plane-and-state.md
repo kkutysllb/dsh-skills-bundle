@@ -5,11 +5,13 @@ The client half runs in a browser: it cannot read the disk, and the host's own s
 ## The route
 
 ```js
+const BASE = '/my-plugin/api'
+
 ctx.webServer.register({
   kind: 'prefix',              // everything under `path` routes here
-  path: '/my-plugin/api',
+  path: BASE,
   handler: async (req, res) => {
-    if (!isLoopbackHost(req.headers)) return writeJson(res, 403, forbidden)
+    if (!isLoopbackHost(req.headers)) return writeJson(res, 403, { ok: false, error: { code: 'forbidden', message: 'forbidden' } })
     const method = (req.method ?? 'GET').toUpperCase()
     const pathname = new URL(req.url ?? '/', 'http://plugin.internal').pathname
     const action = pathname.startsWith(BASE) ? pathname.slice(BASE.length) : ''
