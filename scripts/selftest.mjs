@@ -53,7 +53,7 @@ const respond = (req) => new Promise((resolve) => route.handler(req, {
 
 let res = await respond({ method: 'GET', url: '/kcoder-skills/api/catalog', headers: { host: '127.0.0.1:4567' } })
 ok('catalog 200', res.status === 200)
-ok('catalog core=31 optional=37', res.body.core.length === 31 && res.body.optional.length === 37)
+ok('catalog core=31 optional=40', res.body.core.length === 31 && res.body.optional.length === 40)
 ok('初始全未启用', res.body.optional.every((s) => !s.enabled))
 
 // fence：非回环 Host 拒绝

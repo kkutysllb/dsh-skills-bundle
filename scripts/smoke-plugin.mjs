@@ -75,6 +75,46 @@ try {
   ok('manifest.optional 对账可解析', false, String(error))
 }
 
+// 3.6) 技能 frontmatter 合规（Agent Skills 规范硬约束）：name ≤64 且小写字母/
+//      数字/连字符（首尾不为连字符），description 非空且 ≤1024 字符。只覆盖
+//      注册面（core 与 optional 的直接技能目录）——foundry 等目录内子技能是
+//      文档子技能，不单独注册、不适用本断言。
+try {
+  const skillDirs = []
+  for (const base of [join(ROOT, 'skills'), join(ROOT, 'skills', 'optional')]) {
+    if (!existsSync(base)) continue
+    for (const entry of readdirSync(base, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue
+      if (existsSync(join(base, entry.name, 'SKILL.md'))) skillDirs.push(join(base, entry.name))
+    }
+  }
+  const NAME_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+  const violations = []
+  for (const dir of skillDirs) {
+    const rel = relative(ROOT, dir)
+    const md = readFileSync(join(dir, 'SKILL.md'), 'utf8')
+    const end = md.startsWith('---\n') ? md.indexOf('\n---\n', 4) : -1
+    const fm = end === -1 ? '' : md.slice(4, end)
+    const name = (/^name:\s*(.+?)\s*$/m.exec(fm)?.[1] ?? '').replace(/^["']|["']$/g, '')
+    const quoted = /^description:\s*"((?:[^"\\]|\\.)*)"\s*$/m.exec(fm)
+    const plain = /^description:\s*(\S.*?)\s*$/m.exec(fm)
+    const description = quoted !== null ? quoted[1].replace(/\\"/g, '"') : (plain !== null ? plain[1] : '')
+    if (end === -1) violations.push(`${rel}: 缺 frontmatter`)
+    else if (name === '') violations.push(`${rel}: 缺 name`)
+    else if (name.length > 64) violations.push(`${rel}: name 超 64 字符`)
+    else if (!NAME_RE.test(name)) violations.push(`${rel}: name 非小写数字连字符（${name}）`)
+    if (description.trim() === '') violations.push(`${rel}: 缺 description`)
+    else if (description.length > 1024) violations.push(`${rel}: description 超 1024 字符（${description.length}）`)
+  }
+  ok('技能 frontmatter 符合 Agent Skills 规范', violations.length === 0, violations.join('; '))
+  const manifestParsed = JSON.parse(src('skills/manifest.json') ?? '{}')
+  ok('规范断言覆盖注册面全部技能',
+    skillDirs.length === (manifestParsed.skills?.length ?? 0) + (manifestParsed.optional?.length ?? 0),
+    `扫描 ${skillDirs.length} 个`)
+} catch (error) {
+  ok('技能 frontmatter 合规可解析', false, String(error))
+}
+
 // 4) cordis.patch.yml name 指向
 const patch = src('cordis.patch.yml') ?? ''
 ok('patch name 指向新包名', patch.includes("name: '" + PKG_NAME + "'") || patch.includes('name: "' + PKG_NAME + '"'))
@@ -119,6 +159,7 @@ const RELATIVE_DIRS = new Set(['scripts', 'examples', 'references', 'assets', 't
 // 文档示例豁免：这些"引用"是讲解语法的样例，不是文件指针
 const REF_EXEMPT = new Set([
   'skills/optional/slidev/SKILL.md::other.md', // `src: ./other.md` 是 slidev 导入语法示例
+  'skills/optional/dsh-plugin-authoring/SKILL.md::package.json', // npm exports 映射里的包说明符，非文件路径
 ])
 {
   const skillsRoot = join(ROOT, 'skills')

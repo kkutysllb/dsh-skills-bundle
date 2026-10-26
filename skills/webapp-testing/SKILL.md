@@ -84,6 +84,16 @@ persistent connections (websockets, polling) and is discouraged by Playwright.
 ❌ **Don't** inspect the DOM before the content you target exists on dynamic apps
 ✅ **Do** wait for the element you're about to use (`page.wait_for_selector(...)`) before inspection; never rely on fixed sleeps or `networkidle`
 
+## Browser Automation Tools (MCP)
+
+If the environment exposes browser-automation tools (a Playwright MCP server or
+similar), prefer driving them directly for exploration and one-off verification:
+the page state and discovered selectors stay in the conversation without
+writing a script. Write a script when the check must be repeatable — regression
+suites, CI, exact assertions — because scripts survive sessions while tool-driven
+exploration does not. When both are available: explore with the tool, then
+encode what you learned into the script.
+
 ## Best Practices
 
 - **Use bundled scripts as black boxes** - To accomplish a task, consider whether one of the scripts available in `scripts/` can help. These scripts handle common, complex workflows reliably without cluttering the context window. Use `--help` to see usage, then invoke directly. 

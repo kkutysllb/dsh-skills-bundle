@@ -27,6 +27,19 @@ engine's plan panel, so keep them accurate and tidy.
   log, errors — in separate sections (see below)
 - Never write planning files anywhere else; never split them across files
 
+**Naming precedence (shared `plans/` with the plan skills):**
+
+| Artifact | Naming | Owner |
+|---|---|---|
+| Living plan for ad-hoc/long work (this skill) | `plans/<task-slug>.md` | planning-with-files |
+| Design doc | `plans/YYYY-MM-DD-<topic>-design.md` | brainstorming |
+| Implementation plan | `plans/YYYY-MM-DD-<feature-name>.md` | writing-plans |
+| Execution ledger | `plans/YYYY-MM-DD-<slug>-progress.md` | executing-plans |
+
+When a design doc or implementation plan already exists for the task, treat it
+as the plan and update it in place — do not create a second `<task-slug>.md`
+for the same work.
+
 ## Plan File Structure
 
 Use [templates/plan.md](templates/plan.md) as the reference skeleton. Write

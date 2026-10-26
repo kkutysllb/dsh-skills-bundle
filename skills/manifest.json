@@ -18,7 +18,7 @@
     {
       "dir": "executing-plans",
       "name": "executing-plans",
-      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints"
+      "description": "Use when executing a written implementation plan end to end on a multi-step task, with a progress ledger and a final review"
     },
     {
       "dir": "verification-before-completion",
@@ -128,12 +128,12 @@
     {
       "dir": "frontend-engineering",
       "name": "frontend-engineering",
-      "description": "Use this skill for React, Next.js, state management, data fetching, component behavior, hydration bugs, routing, forms, and frontend integration work."
+      "description": "Use this skill for cross-framework frontend integration work: state ownership, data fetching, forms, routing collaboration, and component composition. For React Server Components and Next.js App Router specifics, use react-nextjs."
     },
     {
       "dir": "react-nextjs",
       "name": "react-nextjs",
-      "description": "Use this skill for React and Next.js coding: client/server component boundaries, hooks, hydration, routing, data fetching, query invalidation, layouts, and component composition."
+      "description": "Use this skill for React and Next.js specifics: client/server component boundaries (RSC), hooks placement, hydration, App Router routing, and data-fetching patterns."
     },
     {
       "dir": "error-handling",
@@ -161,6 +161,11 @@
       "dir": "optional/acceptance-criteria",
       "name": "acceptance-criteria",
       "description": "Use this skill when defining done conditions, testable acceptance criteria, QA checks, user stories, or release gates for a feature or project."
+    },
+    {
+      "dir": "optional/agent-system-design",
+      "name": "agent-system-design",
+      "description": "Use when designing or reviewing an LLM agent product system - context budgets, tool surface and routing, structured output contracts, eval suites, cost and latency limits, failure semantics, and human approval gates."
     },
     {
       "dir": "optional/build-system",
@@ -203,6 +208,11 @@
       "description": "Use this skill when writing or updating developer docs, README sections, API docs, architecture notes, changelogs, inline usage examples, or migration guidance."
     },
     {
+      "dir": "optional/dsh-plugin-authoring",
+      "name": "dsh-plugin-authoring",
+      "description": "Use when authoring a dsh/QiLin/KCoder plugin (host cordis plugin with an optional web-client extension), or when debugging plugin activation, skill registration, slot/locale wiring, fenced HTTP APIs, state persistence, bundle packaging, profile install or release failures in those hosts"
+    },
+    {
       "dir": "optional/environment-setup",
       "name": "environment-setup",
       "description": "Use this skill when setting up local development, environment variables, dependency installation, dev servers, Docker/devcontainers, secrets templates, or onboarding commands."
@@ -231,6 +241,11 @@
       "dir": "optional/internal-comms",
       "name": "internal-comms",
       "description": "A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use. Use this skill whenever asked to write some sort of internal communications (status reports, leadership updates, 3P updates, company newsletters, FAQs, incident reports, project updates, etc.)."
+    },
+    {
+      "dir": "optional/mcp-server-authoring",
+      "name": "mcp-server-authoring",
+      "description": "Use when designing, implementing, reviewing, or debugging an MCP server - tool surface and JSON Schemas, result and error contracts, stdio versus HTTP transport, auth, security boundaries, contract tests, and versioning."
     },
     {
       "dir": "optional/microsoft-foundry",
